@@ -30,9 +30,9 @@ const Marquee: React.FC = () => {
   };
 
   return (
-    <div className="bg-primary h-9 sm:h-10 text-white/90 overflow-hidden relative z-[60] flex items-center border-b border-white/5">
+    <div className="bg-accent h-10 sm:h-11 text-primary overflow-hidden relative z-[60] flex items-center border-b border-black/5">
       <div className="main-container flex justify-between items-center h-full w-full relative">
-        {/* Left/Center: Messages (Hidden on very small mobile if space is tight) */}
+        {/* Left/Center: Messages */}
         <div className="hidden sm:flex flex-grow justify-center items-center">
           <AnimatePresence mode="wait">
             <motion.span
@@ -41,7 +41,7 @@ const Marquee: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] whitespace-nowrap text-center block"
+              className="text-[10px] md:text-[12px] font-semibold uppercase tracking-[0.15em] md:tracking-[0.2em] whitespace-nowrap text-center block"
             >
               {MESSAGES[index]}
             </motion.span>
@@ -57,7 +57,7 @@ const Marquee: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
               transition={{ duration: 0.5 }}
-              className="text-[9px] font-bold uppercase tracking-[0.15em] whitespace-nowrap"
+              className="text-[10px] font-semibold uppercase tracking-[0.15em] whitespace-nowrap"
             >
               {MESSAGES[index].length > 25 ? MESSAGES[index].substring(0, 25) + "..." : MESSAGES[index]}
             </motion.span>
@@ -66,28 +66,28 @@ const Marquee: React.FC = () => {
 
         {/* Right: Promo Code */}
         <div className="flex-shrink-0 flex items-center gap-2 pl-4">
-          <div className="hidden xs:flex items-center bg-accent text-white text-[9px] font-black px-1.5 py-0.5 rounded mr-1">20% OFF</div>
-          <div className="flex items-center gap-1.5 bg-white/5 border border-dashed border-white/20 rounded px-2 py-0.5 sm:py-1">
-            <span className="text-[9px] sm:text-[10px] font-medium tracking-wider opacity-60">CODE:</span>
-            <span className="text-[10px] sm:text-[11px] font-black font-mono text-accent">{PROMO_CODE}</span>
+          <div className="hidden xs:flex items-center bg-primary text-white text-[9px] font-black px-2 py-0.5 rounded shadow-sm">20% OFF</div>
+          <div className="flex items-center gap-1.5 bg-white/20 border border-white/50 rounded-md px-2 py-0.5 sm:py-1">
+            <span className="text-[9px] sm:text-[10px] font-bold tracking-wider opacity-80">CODE:</span>
+            <span className="text-[10px] sm:text-[11px] font-black font-mono text-primary">{PROMO_CODE}</span>
           </div>
           
           <button 
             onClick={handleCopy}
-            className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.1em] text-accent hover:text-white transition-colors min-h-[24px]"
+            className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] text-primary hover:text-white transition-colors min-h-[28px]"
             aria-label="Copy Promo Code"
           >
             {copied ? (
               <motion.span 
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="flex items-center gap-1 text-green-400"
+                className="flex items-center gap-1 text-white"
               >
-                <Check size={12} strokeWidth={3} /> COPIED!
+                <Check size={12} strokeWidth={4} /> COPIED!
               </motion.span>
             ) : (
               <span className="flex items-center gap-1">
-                COPY <Copy size={11} />
+                COPY <Copy size={12} strokeWidth={2.5} />
               </span>
             )}
           </button>
