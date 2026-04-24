@@ -14,15 +14,21 @@ export default function Shop() {
 
   const selectedCategory = searchParams.get('category');
   const selectedSubcategory = searchParams.get('subcategory');
+  const searchQuery = searchParams.get('search') || searchParams.get('q');
 
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter(product => {
       const categoryMatch = !selectedCategory || product.category === selectedCategory;
       const subcategoryMatch = !selectedSubcategory || product.subcategory === selectedSubcategory;
       const priceMatch = product.price <= priceRange;
-      return categoryMatch && subcategoryMatch && priceMatch;
+      const searchMatch = !searchQuery || 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.subcategory.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return categoryMatch && subcategoryMatch && priceMatch && searchMatch;
     });
-  }, [selectedCategory, selectedSubcategory, priceRange]);
+  }, [selectedCategory, selectedSubcategory, priceRange, searchQuery]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -39,8 +45,8 @@ export default function Shop() {
         </span>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="flex flex-col lg:flex-row gap-12">
+      <div className="main-container py-8 md:py-12">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           
           {/* Sidebar Drawer (Mobile) / Sidebar Column (Desktop) */}
           <AnimatePresence>
@@ -83,22 +89,27 @@ export default function Shop() {
                     <div key={cat.id} className="space-y-1">
                       <button 
                         onClick={() => setSearchParams({ category: cat.name })}
-                        className={`w-full flex items-center justify-between text-sm font-bold py-2.5 px-4 rounded-xl transition-all ${selectedCategory === cat.name ? 'bg-primary text-white shadow-xl' : 'text-gray-500 hover:bg-light-gray'}`}
+                        className={`w-full group flex items-center justify-between text-sm font-bold py-3 px-5 rounded-2xl transition-all duration-300 ${selectedCategory === cat.name ? 'bg-primary text-white shadow-[0_10px_25px_rgba(27,42,74,0.2)]' : 'text-gray-500 hover:bg-light-gray hover:text-primary'}`}
                       >
-                        {cat.name} <ChevronDown size={14} className={`${selectedCategory === cat.name ? 'rotate-180' : ''} transition-transform`} />
+                        <span className={`transition-transform duration-300 ${selectedCategory === cat.name ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>{cat.name}</span>
+                        <ChevronDown size={14} className={`${selectedCategory === cat.name ? 'rotate-180' : 'opacity-40'} transition-transform duration-300`} />
                       </button>
                       {selectedCategory === cat.name && (
                         <motion.div 
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          className="pl-6 space-y-1 py-1"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="pl-6 space-y-1 py-2 relative"
                         >
+                          {/* Decorative indicator line */}
+                          <div className="absolute left-3 top-2 bottom-2 w-[2px] bg-accent/20 rounded-full" />
+                          
                           {cat.subcategories.map(sub => (
                             <button 
                               key={sub}
                               onClick={() => { setSearchParams({ category: cat.name, subcategory: sub }); if(window.innerWidth < 1024) setShowFilters(false); }}
-                              className={`w-full text-left text-xs font-bold py-2.5 px-4 rounded-lg transition-all ${selectedSubcategory === sub ? 'text-accent border-l-2 border-accent bg-accent/5' : 'text-gray-400 hover:text-primary'}`}
+                              className={`w-full text-left text-[12px] font-bold py-2.5 px-4 rounded-xl transition-all duration-300 relative ${selectedSubcategory === sub ? 'text-accent bg-accent/5' : 'text-gray-400 hover:text-primary hover:pl-6'}`}
                             >
+                              {selectedSubcategory === sub && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-accent rounded-full" />}
                               {sub}
                             </button>
                           ))}

@@ -1,17 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-
-const visualCats = [
-  { name: 'Electronics & Technology', img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&q=80' },
-  { name: 'Fashion & Apparel', img: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80' },
-  { name: 'Home & Living', img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80' },
-  { name: 'Health & Beauty', img: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80' },
-  { name: 'Toys', img: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&q=80' },
-  { name: 'Car Accessories', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80' }
-];
+import { CATEGORIES } from '../data';
 
 const VisualCategoryGrid: React.FC = () => {
+  // Use specific categories for this grid to ensure they match the user's "Grid 2" context
+  // We'll choose the top 6 that correspond to the departments mentioned
+  const featuredCats = CATEGORIES.slice(0, 6);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       <div className="text-center space-y-4">
@@ -19,10 +15,10 @@ const VisualCategoryGrid: React.FC = () => {
         <div className="w-20 h-1.5 bg-accent mx-auto rounded-full"></div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {visualCats.map((cat, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
+        {featuredCats.map((cat, i) => (
           <motion.div
-            key={cat.name}
+            key={cat.id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -30,21 +26,49 @@ const VisualCategoryGrid: React.FC = () => {
           >
             <Link
               to={`/shop?category=${encodeURIComponent(cat.name)}`}
-              className="relative group block h-[450px] rounded-[16px] overflow-hidden shadow-xl"
+              className="relative group block h-[450px] sm:h-[500px] rounded-[32px] overflow-hidden shadow-[0_15px_45px_rgba(0,0,0,0.08)] hover:shadow-[0_25px_70px_rgba(0,0,0,0.18)] transition-all duration-500 hover:-translate-y-2 border border-gray-100/50"
             >
-              <img 
-                src={cat.img} 
-                alt={cat.name}
-                className="w-full h-full object-cover object-center transition-transform duration-400 ease-in-out group-hover:scale-[1.06]"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent via-transparent transition-opacity" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)' }}></div>
-              <div className="absolute inset-0 flex flex-col justify-end p-10 space-y-2">
-                <h3 className="text-2xl font-bold text-white leading-tight">{cat.name}</h3>
-                <span className="text-[11px] font-bold text-white uppercase tracking-widest underline decoration-accent underline-offset-4">
-                  Explore More
-                </span>
+              {/* Standardized Image Container */}
+              <div className="absolute inset-0 w-full h-full overflow-hidden">
+                <img 
+                  src={cat.image} 
+                  alt={cat.name}
+                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.08]"
+                  referrerPolicy="no-referrer"
+                />
               </div>
+
+              {/* Dynamic Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-opacity duration-500 group-hover:via-black/50"></div>
+
+              {/* Visual Hierarchy & Content */}
+              <div className="absolute inset-0 flex flex-col justify-end p-9 md:p-11 space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <p className="text-accent text-[10px] font-black uppercase tracking-[3px] opacity-90">Department</p>
+                    <h3 className="text-3xl font-black text-white leading-tight transition-transform duration-500 group-hover:-translate-y-1">{cat.name}</h3>
+                  </div>
+
+                  {/* Sub-category Points with Uniform Alignment */}
+                  <ul className="space-y-2.5 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
+                    {cat.subcategories.slice(0, 3).map((sub, idx) => (
+                      <li key={idx} className="flex items-center gap-3 text-white/70 hover:text-white transition-colors duration-300">
+                        {/* Bullet point indicator */}
+                        <div className="w-2 h-[2px] bg-accent rounded-full flex-shrink-0" />
+                        <span className="text-[13px] font-bold tracking-wide">{sub}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="flex items-center gap-3 text-white/40 group-hover:text-accent transition-all duration-300">
+                  <span className="text-[10px] font-black uppercase tracking-[3px]">Explore Collection</span>
+                  <div className="w-8 h-px bg-current group-hover:w-12 transition-all duration-500"></div>
+                </div>
+              </div>
+
+              {/* Subtle Outer Glow Decoration on Hover */}
+              <div className="absolute inset-0 ring-1 ring-white/10 group-hover:ring-accent/30 rounded-[32px] transition-all duration-500"></div>
             </Link>
           </motion.div>
         ))}

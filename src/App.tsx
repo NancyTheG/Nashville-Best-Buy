@@ -11,6 +11,8 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import MyAccount from './pages/MyAccount';
+import SearchResultPage from './pages/Search';
+import InfoPage from './pages/InfoPage';
 
 import { AppProvider } from './AppContext';
 
@@ -26,6 +28,14 @@ const router = createBrowserRouter([
       {
         path: '/shop',
         element: <Shop />,
+      },
+      {
+        path: '/search',
+        element: <SearchResultPage />,
+      },
+      {
+        path: '/info/:slug',
+        element: <InfoPage />,
       },
       {
         path: '/product/:id',

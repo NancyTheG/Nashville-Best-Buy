@@ -4,17 +4,17 @@ import { Link } from 'react-router-dom';
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-100">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-20">
+      <div className="main-container py-12 md:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-16">
           {/* Brand Column */}
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-6 md:space-y-8 text-center sm:text-left">
             <Link to="/" className="text-2xl font-black tracking-tighter text-primary block">
               Nashville<span className="text-accent">BestBuy</span>
             </Link>
-            <p className="text-gray-500 text-sm leading-relaxed font-medium max-w-xs">
+            <p className="text-gray-500 text-sm leading-relaxed font-medium max-w-xs mx-auto sm:mx-0">
               Experience the best of Nashville retail. We bring you premium electronics, trendy fashion, and home essentials with exceptional service and value.
             </p>
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center justify-center sm:justify-start gap-4 flex-wrap">
               {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
                 <a key={i} href="#" className="p-3 bg-light-gray rounded-2xl text-primary hover:text-white hover:bg-accent hover:-translate-y-1 transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center">
                   <Icon size={18} fill="currentColor" strokeWidth={0} />
@@ -41,11 +41,17 @@ export default function Footer() {
           <div>
             <h4 className="text-primary font-black text-xs uppercase tracking-widest mb-10">Help & Info</h4>
             <ul className="space-y-4">
-              {['Track Your Order', 'Returns & Refunds', 'Shipping Information', 'Terms & Conditions', 'Privacy Policy'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-500 hover:text-accent text-[13px] font-bold transition-colors">
-                    {item}
-                  </a>
+              {[
+                { name: 'About Us', slug: 'about' },
+                { name: 'Contact Us', slug: 'contact' },
+                { name: 'Privacy Policy', slug: 'privacy-policy' },
+                { name: 'Terms & Conditions', slug: 'terms-conditions' },
+                { name: 'Track Your Order', slug: 'tracking' }
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link to={`/info/${item.slug}`} className="text-gray-500 hover:text-accent text-[13px] font-bold transition-colors">
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>

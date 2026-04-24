@@ -97,30 +97,55 @@ const CategoryIcons: React.FC = () => {
           </button>
 
           {/* Slider Viewport */}
-          <div className="overflow-hidden px-1 py-4">
+          <div className="overflow-hidden px-1 py-4 touch-pan-y">
             <motion.div 
-              className="flex gap-6 slider-track"
+              className="flex gap-6 slider-track cursor-grab active:cursor-grabbing"
+              drag="x"
+              dragConstraints={{ 
+                left: -maxIndex * (cardWidth + gap), 
+                right: 0 
+              }}
+              dragElastic={0.2}
+              dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+              onDragStart={() => setIsPaused(true)}
+              onDragEnd={(event, info) => {
+                setIsPaused(false);
+                const draggedDistance = info.offset.x;
+                const threshold = (cardWidth + gap) / 3;
+
+                if (draggedDistance < -threshold) {
+                  nextSlide();
+                } else if (draggedDistance > threshold) {
+                  prevSlide();
+                }
+              }}
               animate={{ 
                 x: `-${currentIndex * (cardWidth + gap)}px` 
               }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
+              transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
             >
               {CATEGORIES.map((cat) => (
                 <Link
                   key={cat.id}
                   to={`/shop?category=${encodeURIComponent(cat.name)}`}
-                  className="category-card relative block w-[200px] h-[160px] rounded-[16px] overflow-hidden shrink-0 group cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500"
+                  className="category-card relative block w-[200px] h-[160px] rounded-[32px] overflow-hidden shrink-0 group cursor-pointer shadow-[0_10px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(244,123,32,0.15)] transition-all duration-500"
                 >
                   <img 
                     src={cat.image} 
                     alt={cat.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.08]"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.12]"
                     referrerPolicy="no-referrer"
+                    draggable={false}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent group-hover:from-black/85 transition-all duration-300" />
-                  <span className="absolute bottom-[14px] left-[14px] text-white font-bold text-[13px] tracking-[1px] uppercase pointer-events-none">
-                    {cat.name.split(' & ')[0]}
-                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-all duration-500 group-hover:from-black/90" />
+                  <div className="absolute inset-0 p-6 flex flex-col justify-end space-y-2">
+                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 flex flex-col items-start gap-1">
+                      <p className="text-[10px] font-black text-accent uppercase tracking-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">View Gear</p>
+                      <span className="text-white font-black text-[13px] tracking-[1px] uppercase block leading-tight">
+                        {cat.name.split(' & ')[0]}
+                      </span>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </motion.div>

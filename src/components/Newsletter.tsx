@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Send, CheckCircle2 } from 'lucide-react';
 
 const Newsletter: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,15 +26,18 @@ const Newsletter: React.FC = () => {
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 max-w-[700px] mx-auto bg-white rounded-[28px] p-8 sm:p-12 lg:p-[60px_80px] text-center transform transition-all duration-400 ease-out hover:-translate-y-2 group shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_20px_rgba(0,0,0,0.1),0_30px_60px_rgba(0,0,0,0.2),inset_0_2px_0px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_12px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.15),0_50px_80px_rgba(0,0,0,0.25),inset_0_2px_0px_rgba(255,255,255,0.8)]"
+        className="relative z-10 max-w-[700px] mx-auto bg-white rounded-[28px] p-8 sm:p-12 lg:p-[60px_80px] text-center transform transition-all duration-400 ease-out hover:-translate-y-2 group shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_20px_rgba(0,0,0,0.1),0_30px_60px_rgba(0,0,0,0.2),inset_0_2px_0px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_123px_rgba(0,0,0,0.08),0_20px_40px_rgba(0,0,0,0.15),0_50px_80px_rgba(0,0,0,0.25),inset_0_2px_0px_rgba(255,255,255,0.8)]"
       >
         {/* Top Accent Strip */}
         <div className="absolute top-0 left-[10%] right-[10%] h-1 bg-gradient-to-r from-accent via-[#FF9A4D] to-accent rounded-b-lg" />
 
         <div className="space-y-3 mb-8">
-          <span className="block text-[12px] font-semibold tracking-[3px] text-accent uppercase">
-            ✉️ NEWSLETTER
-          </span>
+          <div className="flex items-center justify-center gap-2 text-accent">
+            <Mail size={16} strokeWidth={2.5} />
+            <span className="block text-[12px] font-semibold tracking-[3px] uppercase">
+              NEWSLETTER
+            </span>
+          </div>
           <h2 className="text-4xl sm:text-[42px] font-extrabold text-primary leading-tight">
             Stay in the Loop
           </h2>

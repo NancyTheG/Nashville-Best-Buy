@@ -57,7 +57,7 @@ const HeroSlider: React.FC = () => {
 
   return (
     <section 
-      className="relative w-full h-[650px] sm:h-[700px] lg:h-[600px] overflow-hidden transition-all duration-500 ease-in-out"
+      className="relative w-full h-[600px] sm:h-[700px] lg:h-[650px] overflow-hidden transition-all duration-500 ease-in-out"
       style={{ background: slides[current].bg }}
     >
       {/* Decorative Pattern Overlay */}
@@ -76,14 +76,14 @@ const HeroSlider: React.FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute inset-0 w-full h-full flex flex-col lg:flex-row items-center justify-center px-4 sm:px-12 lg:px-24 py-12 lg:py-0 text-center lg:text-left"
+          className="absolute inset-0 w-full h-full flex flex-col lg:flex-row items-center justify-center px-4 sm:px-12 lg:px-24 py-16 lg:py-0 text-center lg:text-left overflow-hidden"
         >
-          <div className="flex-1 space-y-6 lg:space-y-8 z-10 w-full">
+          <div className="flex-1 space-y-6 lg:space-y-8 z-10 w-full max-w-2xl">
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-black text-primary leading-tight lg:leading-[1.1]"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-primary leading-tight lg:leading-[1.1] tracking-tight"
             >
               {slides[current].headline}
             </motion.h1>
@@ -91,7 +91,7 @@ const HeroSlider: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-sm sm:text-lg lg:text-xl text-gray-600 max-w-xl mx-auto lg:mx-0"
+              className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 font-medium"
             >
               {slides[current].subtext}
             </motion.p>
@@ -103,19 +103,19 @@ const HeroSlider: React.FC = () => {
             >
               <Link 
                 to={slides[current].link} 
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-accent text-white font-black py-4 px-10 rounded-full shadow-lg shadow-orange-200 hover:shadow-orange-300 hover:-translate-y-1 transition-all group min-h-[48px]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-accent text-white font-black py-4 px-10 rounded-full shadow-lg shadow-orange-200 hover:shadow-orange-300 hover:-translate-y-1 transition-all group min-h-[52px]"
               >
                 {slides[current].button} <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
           </div>
 
-          <div className="flex-1 w-full flex items-center justify-center relative p-4 mt-8 lg:mt-0">
+          <div className="flex flex-1 w-full items-center justify-center relative p-4 mt-8 lg:mt-0 lg:max-w-2xl">
             <motion.div 
               initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="w-full max-w-md lg:max-w-lg aspect-[4/3] rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl relative z-10"
+              className="w-full max-w-[280px] sm:max-w-md lg:max-w-lg aspect-[4/3] rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-2xl relative z-10 bg-white"
             >
               <img 
                 src={slides[current].image} 
@@ -124,7 +124,7 @@ const HeroSlider: React.FC = () => {
                 className="w-full h-full object-cover"
               />
             </motion.div>
-            <div className="absolute w-[80%] h-[80%] bg-accent/5 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute w-[80%] h-[80%] bg-accent/10 rounded-full blur-3xl -z-10"></div>
           </div>
         </motion.div>
       </AnimatePresence>

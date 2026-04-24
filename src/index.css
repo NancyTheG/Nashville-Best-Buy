@@ -53,6 +53,10 @@
     max-width: 100vw;
   }
 
+  .main-container {
+    @apply max-w-[1400px] mx-auto px-5 sm:px-6 lg:px-8;
+  }
+
   img {
     max-width: 100%;
     height: auto;
@@ -108,6 +112,20 @@
     -webkit-backface-visibility: hidden;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+  }
+
+  /* Responsive Fixes */
+  .grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .grid-responsive {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
   }
 
   /* Mobile Menu Styles */

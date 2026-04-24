@@ -1,8 +1,8 @@
 
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PRODUCTS } from '../data';
-import { Star, Heart, ShoppingBag, Truck, ShieldCheck, ArrowLeft, Plus, Minus, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { Star, Heart, ShoppingBag, Truck, ShieldCheck, ArrowLeft, Plus, Minus, Share2, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { useApp } from '../AppContext';
@@ -28,21 +28,76 @@ export default function ProductDetail() {
   const wishlisted = isInWishlist(product.id);
   const relatedProducts = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
+  // Mock colors if missing from data
+  const colors = [
+    { name: 'Navy', hex: '#1B2A4A' },
+    { name: 'Orange', hex: '#F47B20' },
+    { name: 'Slate', hex: '#64748b' },
+    { name: 'White', hex: '#ffffff' }
+  ];
+  const [selectedColor, setSelectedColor] = useState(colors[0].name);
+
   // Mock thumbnails
   const thumbnails = [product.image, ...Array(3).fill(product.image)];
 
+  const [isAdding, setIsAdding] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  // Add main image ref
+  const mainImageRef = useState<HTMLDivElement | null>(null)[0];
+  const galleryRef = React.useRef<HTMLDivElement>(null);
+  const detailButtonIconRef = React.useRef<HTMLSpanElement>(null);
+
+  const handleAddToCartDetail = () => {
+    if (isAdding) return;
+    setIsAdding(true);
+    setJustAdded(true);
+    
+    setTimeout(() => setIsAdding(false), 500);
+    setTimeout(() => setJustAdded(false), 1500);
+
+    let startCoords = undefined;
+    let endCoords = undefined;
+
+    if (galleryRef.current) {
+      const rect = galleryRef.current.getBoundingClientRect();
+      startCoords = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+
+    if (detailButtonIconRef.current) {
+      const rect = detailButtonIconRef.current.getBoundingClientRect();
+      endCoords = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+
+    addToCart(product, quantity, selectedSize, selectedColor, startCoords, endCoords);
+  };
+
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 space-y-12 md:space-y-20">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 space-y-8 md:space-y-12">
+      {/* Breadcrumbs */}
+      <nav className="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest px-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+        <Link to="/" className="hover:text-accent transition-colors">Home</Link>
+        <ChevronRight size={10} className="shrink-0" />
+        <Link to="/shop" className="hover:text-accent transition-colors">Shop</Link>
+        <ChevronRight size={10} className="shrink-0" />
+        <Link to={`/shop?category=${product.category}`} className="hover:text-accent transition-colors">{product.category}</Link>
+        <ChevronRight size={10} className="shrink-0" />
+        <span className="text-primary line-clamp-1">{product.name}</span>
+      </nav>
+
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 xl:gap-20">
         {/* Gallery */}
         <div className="w-full lg:flex-1 space-y-4 md:space-y-6">
-          <Link to="/shop" className="inline-flex items-center gap-2 text-sm font-black text-gray-400 hover:text-primary transition-colors mb-2 md:mb-4 uppercase tracking-widest min-h-[44px]">
-            <ArrowLeft size={16} /> Back to Results
-          </Link>
           <div className="space-y-4 md:space-y-6">
             <AnimatePresence mode="wait">
               <motion.div 
                 key={activeImage}
+                ref={galleryRef}
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
@@ -117,6 +172,23 @@ export default function ProductDetail() {
           </div>
 
           <div className="space-y-10 pt-10 border-t border-gray-100">
+            {/* Color Selector */}
+            <div className="space-y-4">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Select Color: <span className="text-primary">{selectedColor}</span></h3>
+              <div className="flex flex-wrap gap-4">
+                {colors.map(color => (
+                  <button 
+                    key={color.name}
+                    onClick={() => setSelectedColor(color.name)}
+                    className={`w-10 h-10 rounded-full border-2 transition-all p-0.5 ${selectedColor === color.name ? 'border-accent ring-4 ring-orange-50 scale-110' : 'border-transparent hover:scale-105'}`}
+                    title={color.name}
+                  >
+                    <div className="w-full h-full rounded-full shadow-inner" style={{ backgroundColor: color.hex }}></div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Size Selector */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
@@ -155,10 +227,22 @@ export default function ProductDetail() {
               </div>
               <div className="flex-grow w-full flex gap-4">
                 <button 
-                  onClick={() => addToCart(product, quantity, selectedSize)}
-                  className="flex-grow py-5 bg-primary text-white font-black rounded-[2rem] shadow-2xl hover:shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95"
+                  onClick={handleAddToCartDetail}
+                  disabled={isAdding}
+                  className={`flex-grow py-5 font-black rounded-[2rem] shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95 ${
+                    justAdded 
+                    ? 'bg-green-500 text-white shadow-green-500/20' 
+                    : 'bg-primary text-white shadow-primary/20 hover:shadow-primary/30'
+                  }`}
                 >
-                  <ShoppingBag size={20} strokeWidth={3} /> Add to Cart
+                  <motion.span
+                    ref={detailButtonIconRef}
+                    animate={justAdded ? { scale: [1, 1.4, 1] } : {}}
+                    transition={{ duration: 0.3, delay: 0.8 }}
+                  >
+                    {justAdded ? <Truck size={20} className="text-white" /> : <ShoppingBag size={20} strokeWidth={3} />}
+                  </motion.span>
+                  {justAdded ? 'Added!' : 'Add to Cart'}
                 </button>
                 <button 
                   onClick={() => toggleWishlist(product.id)}

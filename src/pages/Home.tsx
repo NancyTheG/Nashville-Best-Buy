@@ -33,13 +33,15 @@ export default function Home() {
       <DividerA />
 
       {/* TRENDING PRODUCTS (Odd - #FFFFFF) */}
-      <section className="bg-white py-10 md:py-[60px] max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-8 md:mb-16 px-2">
+      <section className="bg-white py-10 md:py-[60px] main-container">
+        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between text-center sm:text-left gap-6 mb-8 md:mb-16">
           <div className="space-y-4">
-            <h2 className="text-3xl md:text-4xl font-black text-primary tracking-tight">Trending Right Now</h2>
-            <div className="w-16 h-1.5 bg-accent rounded-full"></div>
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary tracking-tighter uppercase italic">
+              Trending <span className="text-accent underline decoration-primary decoration-8 underline-offset-8">Right Now</span>
+            </h2>
+            <div className="w-16 h-1.5 bg-accent mx-auto sm:mx-0 rounded-full"></div>
           </div>
-          <Link to="/shop" className="group flex items-center gap-2 text-sm font-black text-accent uppercase tracking-widest hover:gap-4 transition-all duration-300 min-h-[44px]">
+          <Link to="/shop" className="group flex items-center justify-center sm:justify-start gap-2 text-sm font-black text-accent uppercase tracking-widest hover:gap-4 transition-all duration-300 min-h-[48px]">
             View All Deals <ArrowRight size={18} />
           </Link>
         </div>

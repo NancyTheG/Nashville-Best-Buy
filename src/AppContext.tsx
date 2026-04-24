@@ -7,15 +7,35 @@ interface CartItem extends Product {
   selectedColor?: string;
 }
 
+interface AppNotification {
+  id: string;
+  message: string;
+  type: 'success' | 'info';
+}
+
+interface FlyToCartTrigger {
+  id: string;
+  image: string;
+  startX: number;
+  startY: number;
+  endX?: number;
+  endY?: number;
+}
+
 interface AppContextType {
   cart: CartItem[];
   wishlist: string[];
-  addToCart: (product: Product, quantity?: number, size?: string, color?: string) => void;
-  removeFromCart: (productId: string) => void;
-  updateCartQuantity: (productId: string, delta: number) => void;
+  addToCart: (product: Product, quantity?: number, size?: string, color?: string, startCoords?: { x: number, y: number }, endCoords?: { x: number, y: number }) => void;
+  removeFromCart: (productId: string, size?: string) => void;
+  updateCartQuantity: (productId: string, delta: number, size?: string) => void;
   toggleWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   clearCart: () => void;
+  notifications: AppNotification[];
+  removeNotification: (id: string) => void;
+  flyTrigger: FlyToCartTrigger | null;
+  clearFlyTrigger: () => void;
+  cartBump: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -31,6 +51,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [flyTrigger, setFlyTrigger] = useState<FlyToCartTrigger | null>(null);
+  const [cartBump, setCartBump] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('nbb_cart', JSON.stringify(cart));
   }, [cart]);
@@ -39,9 +63,44 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('nbb_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  const addToCart = (product: Product, quantity = 1, size?: string, color?: string) => {
+  const addNotification = (message: string) => {
+    const id = Math.random().toString(36).substring(7);
+    setNotifications([{ id, message, type: 'success' }]); // Replace existing notifications for singleton behavior
+    setTimeout(() => removeNotification(id), 3000);
+  };
+
+  const removeNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const clearFlyTrigger = () => setFlyTrigger(null);
+
+  const addToCart = (product: Product, quantity = 1, size?: string, color?: string, startCoords?: { x: number, y: number }, endCoords?: { x: number, y: number }) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id && item.selectedSize === size);
+      
+      if (startCoords) {
+        setFlyTrigger({
+          id: Math.random().toString(36).substring(7),
+          image: product.image,
+          startX: startCoords.x,
+          startY: startCoords.y,
+          endX: endCoords?.x,
+          endY: endCoords?.y
+        });
+        
+        // Delay the bump effect to match fly animation duration (approx 800ms)
+        setTimeout(() => {
+          setCartBump(true);
+          setTimeout(() => setCartBump(false), 300);
+        }, 800);
+      } else {
+        setCartBump(true);
+        setTimeout(() => setCartBump(false), 300);
+      }
+
+      addNotification(`${product.name} added to cart!`);
+
       if (existing) {
         return prev.map(item => 
           (item.id === product.id && item.selectedSize === size) 
@@ -51,16 +110,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       return [...prev, { ...product, cartQuantity: quantity, selectedSize: size, selectedColor: color }];
     });
-    // Add a little bounce effect logic if needed elsewhere
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item.id !== productId));
+  const removeFromCart = (productId: string, size?: string) => {
+    setCart(prev => prev.filter(item => !(item.id === productId && item.selectedSize === size)));
   };
 
-  const updateCartQuantity = (productId: string, delta: number) => {
+  const updateCartQuantity = (productId: string, delta: number, size?: string) => {
     setCart(prev => prev.map(item => 
-      item.id === productId 
+      (item.id === productId && item.selectedSize === size)
         ? { ...item, cartQuantity: Math.max(1, item.cartQuantity + delta) } 
         : item
     ));
@@ -87,7 +145,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       updateCartQuantity, 
       toggleWishlist, 
       isInWishlist,
-      clearCart
+      clearCart,
+      notifications,
+      removeNotification,
+      flyTrigger,
+      clearFlyTrigger,
+      cartBump
     }}>
       {children}
     </AppContext.Provider>

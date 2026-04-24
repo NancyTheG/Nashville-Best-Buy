@@ -161,8 +161,11 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }
             <img 
               src={testimonial.avatar} 
               alt={testimonial.name} 
-              // @ts-ignore - Using standard HTML onerror for smooth scroller clone support
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                const nextEl = e.currentTarget.nextElementSibling as HTMLElement;
+                if (nextEl) nextEl.style.display = 'flex';
+              }}
               className="w-10 h-10 rounded-full border-2 border-[#F47B20] object-cover absolute inset-0 z-10"
             />
           )}

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Product } from '../data';
 import { Link } from 'react-router-dom';
 import { useApp } from '../AppContext';
+import { motion } from 'motion/react';
 
 interface ProductCardProps {
   product: Product;
@@ -17,20 +18,60 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, children }) => {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) 
     : 0;
 
+  const [isAdding, setIsAdding] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const buttonIconRef = React.useRef<HTMLSpanElement>(null);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isAdding) return;
+    setIsAdding(true);
+    setJustAdded(true);
+    
+    setTimeout(() => setIsAdding(false), 500);
+    setTimeout(() => setJustAdded(false), 1500);
+    
+    let startCoords = undefined;
+    let endCoords = undefined;
+
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      startCoords = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 3 // start from image area
+      };
+    }
+
+    if (buttonIconRef.current) {
+      const rect = buttonIconRef.current.getBoundingClientRect();
+      endCoords = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+    
+    addToCart(product, 1, undefined, undefined, startCoords, endCoords);
+  };
+
   return (
     <div 
-      className="product-card group relative bg-white rounded-[16px] border-[1.5px] border-[#F0F0F0] shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-visible transition-all duration-300 ease-in-out hover:border-accent hover:shadow-[0_8px_30px_rgba(244,123,32,0.15)] hover:-translate-y-1 cursor-pointer flex flex-col h-full p-0"
+      ref={cardRef}
+      className="product-card group relative bg-white rounded-[24px] border border-[#F0F0F0] shadow-[0_2px_12px_rgba(0,0,0,0.04)] overflow-visible transition-all duration-500 ease-out hover:border-accent hover:shadow-[0_12px_45px_rgba(244,123,32,0.12)] hover:-translate-y-1.5 cursor-pointer flex flex-col h-full"
     >
       {/* CARD IMAGE AREA */}
-      <div className="relative h-[220px] rounded-t-[14px] overflow-hidden bg-[#F8F8F8] shrink-0">
+      <div className="relative h-[200px] sm:h-[240px] rounded-t-[23px] overflow-hidden bg-[#F8F8F8] shrink-0 border-b border-gray-50">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
           <img 
             src={product.image} 
             alt={product.name}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-400 ease-in-out group-hover:scale-[1.06]"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.08]"
             referrerPolicy="no-referrer"
           />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
         </Link>
         
         {/* SALE badge */}
@@ -107,14 +148,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, children }) => {
 
         {/* Add to Cart button */}
         <button 
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            addToCart(product);
-          }}
-          className="mt-auto w-full bg-white border-2 border-accent text-accent rounded-[10px] p-2.5 text-[13px] font-bold flex items-center justify-center gap-2 transition-all duration-250 hover:bg-accent hover:text-white hover:scale-[1.02] hover:shadow-[0_4px_12px_rgba(244,123,32,0.3)] active:scale-95"
+          onClick={handleAddToCart}
+          disabled={isAdding}
+          className={`mt-auto w-full border-2 rounded-[10px] p-2.5 text-[13px] font-bold flex items-center justify-center gap-2 transition-all duration-250 ${
+            justAdded 
+            ? 'bg-green-500 border-green-500 text-white' 
+            : 'bg-white border-accent text-accent hover:bg-accent hover:text-white hover:scale-[1.02] hover:shadow-[0_4px_12px_rgba(244,123,32,0.3)]'
+          } active:scale-95`}
         >
-          <ShoppingCart size={16} /> Add to Cart
+          <motion.span
+            ref={buttonIconRef}
+            animate={justAdded ? { scale: [1, 1.4, 1] } : {}}
+            transition={{ duration: 0.3, delay: 0.8 }} // pop when flyer lands
+            className="flex items-center justify-center"
+          >
+            {justAdded ? <Star size={16} fill="white" /> : <ShoppingCart size={16} />}
+          </motion.span>
+          {justAdded ? 'Added!' : 'Add to Cart'}
         </button>
       </div>
     </div>
